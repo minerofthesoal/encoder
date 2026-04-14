@@ -1,0 +1,11 @@
+{
+  "id": "rot47",
+  "name": "ROT47",
+  "description": "Rotates ASCII printable characters (33-126) by 47 positions. Self-inverse — encoding and decoding are the same operation.",
+  "author": "EncoderStudio",
+  "version": "1.0.0",
+  "isDecodable": true,
+  "options": [],
+  "encodeBody": "return input.split('').map(function(c) {\n  var code = c.charCodeAt(0);\n  if (code >= 33 && code <= 126) {\n    return String.fromCharCode(33 + ((code - 33 + 47) % 94));\n  }\n  return c;\n}).join('');",
+  "decodeBody": "return input.split('').map(function(c) {\n  var code = c.charCodeAt(0);\n  if (code >= 33 && code <= 126) {\n    return String.fromCharCode(33 + ((code - 33 + 47) % 94));\n  }\n  return c;\n}).join('');"
+}

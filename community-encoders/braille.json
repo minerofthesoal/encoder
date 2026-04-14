@@ -1,0 +1,11 @@
+{
+  "id": "braille-unicode",
+  "name": "Braille Unicode",
+  "description": "Converts ASCII letters and digits to Unicode Braille patterns. Non-mapped characters pass through.",
+  "author": "EncoderStudio",
+  "version": "1.0.0",
+  "isDecodable": true,
+  "options": [],
+  "encodeBody": "var map = {\n  'A':'\u2801','B':'\u2803','C':'\u2809','D':'\u2819','E':'\u2811',\n  'F':'\u280B','G':'\u281B','H':'\u2813','I':'\u280A','J':'\u281A',\n  'K':'\u2805','L':'\u2807','M':'\u280D','N':'\u281D','O':'\u2815',\n  'P':'\u280F','Q':'\u281F','R':'\u2817','S':'\u280E','T':'\u281E',\n  'U':'\u2825','V':'\u2827','W':'\u283A','X':'\u282D','Y':'\u283D',\n  'Z':'\u2835',' ':' ',\n  '0':'\u2834','1':'\u2802','2':'\u2806','3':'\u2812','4':'\u2832',\n  '5':'\u2822','6':'\u2816','7':'\u2836','8':'\u2826','9':'\u2814'\n};\nreturn input.toUpperCase().split('').map(function(ch) {\n  return map[ch] || ch;\n}).join('');",
+  "decodeBody": "var fwd = {\n  'A':'\u2801','B':'\u2803','C':'\u2809','D':'\u2819','E':'\u2811',\n  'F':'\u280B','G':'\u281B','H':'\u2813','I':'\u280A','J':'\u281A',\n  'K':'\u2805','L':'\u2807','M':'\u280D','N':'\u281D','O':'\u2815',\n  'P':'\u280F','Q':'\u281F','R':'\u2817','S':'\u280E','T':'\u281E',\n  'U':'\u2825','V':'\u2827','W':'\u283A','X':'\u282D','Y':'\u283D',\n  'Z':'\u2835',' ':' ',\n  '0':'\u2834','1':'\u2802','2':'\u2806','3':'\u2812','4':'\u2832',\n  '5':'\u2822','6':'\u2816','7':'\u2836','8':'\u2826','9':'\u2814'\n};\nvar rev = {};\nObject.keys(fwd).forEach(function(k) { rev[fwd[k]] = k; });\nreturn Array.from(input).map(function(ch) {\n  return rev[ch] || ch;\n}).join('');"
+}
