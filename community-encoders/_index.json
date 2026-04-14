@@ -1,0 +1,20 @@
+[
+  {
+    "file": "rot47.json",
+    "name": "ROT47",
+    "author": "EncoderStudio",
+    "description": "Rotates ASCII printable characters (33-126) by 47 positions. Self-inverse."
+  },
+  {
+    "file": "nato-phonetic.json",
+    "name": "NATO Phonetic Alphabet",
+    "author": "EncoderStudio",
+    "description": "Converts letters to NATO phonetic alphabet words (Alpha, Bravo, Charlie...)."
+  },
+  {
+    "file": "braille.json",
+    "name": "Braille Unicode",
+    "author": "EncoderStudio",
+    "description": "Converts ASCII letters and digits to Unicode Braille patterns."
+  }
+]

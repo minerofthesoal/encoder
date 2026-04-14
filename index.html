@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encoder Studio — Multi-Format Encoding Toolkit</title>
+  <meta name="description" content="Client-side multi-format encoder/decoder with chain encoding, custom encoder builder, and community encoders.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== Header ========== -->
+<header class="site-header">
+  <div>
+    <h1><span>&lt;/&gt;</span> Encoder Studio</h1>
+    <p class="tagline">All encoding happens locally in your browser. Nothing is sent to a server.</p>
+  </div>
+</header>
+
+<!-- ========== Tabs ========== -->
+<nav class="tab-bar" role="tablist" aria-label="Main sections">
+  <button class="tab-btn active" role="tab" data-tab="single"   aria-selected="true">Encode / Decode</button>
+  <button class="tab-btn"        role="tab" data-tab="chain"    aria-selected="false">Chain Encoder</button>
+  <button class="tab-btn"        role="tab" data-tab="custom"   aria-selected="false">Custom Builder</button>
+  <button class="tab-btn"        role="tab" data-tab="community" aria-selected="false">Community</button>
+</nav>
+
+<!-- ============================================================
+     TAB 1 — Single Encode / Decode
+     ============================================================ -->
+<section id="tab-single" class="tab-panel active" role="tabpanel">
+
+  <!-- Direction toggle -->
+  <div class="mb" style="display:flex;align-items:center;gap:1rem">
+    <div class="direction-toggle" id="single-direction">
+      <button class="active" data-dir="encode">Encode</button>
+      <button data-dir="decode">Decode</button>
+    </div>
+    <span class="text-small text-dim" id="single-encoder-label">Select an encoder below</span>
+  </div>
+
+  <!-- Encoder selector -->
+  <div class="card mb">
+    <div class="card-title">Encoders</div>
+    <div id="single-encoder-list"></div>
+  </div>
+
+  <!-- Options (rendered dynamically) -->
+  <div class="options-panel" id="single-options"></div>
+
+  <!-- IO -->
+  <div class="row">
+    <div class="card">
+      <label for="single-input">Input</label>
+      <textarea id="single-input" placeholder="Type or paste text here..."></textarea>
+      <div class="btn-group mt">
+        <button class="btn btn-primary" id="single-run">Run</button>
+        <button class="btn" id="single-clear-input">Clear</button>
+        <button class="btn btn-teal" id="single-swap">Swap I/O</button>
+      </div>
+    </div>
+    <div class="card output-area">
+      <label for="single-output">Output</label>
+      <textarea id="single-output" readonly placeholder="Result will appear here..."></textarea>
+      <button class="btn btn-small copy-btn" data-copy="single-output">Copy</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 2 — Chain Encoder
+     ============================================================ -->
+<section id="tab-chain" class="tab-panel" role="tabpanel">
+
+  <div class="row">
+    <!-- Left: chain builder -->
+    <div>
+      <div class="card mb">
+        <div class="card-title">Encoding Chain</div>
+        <p class="text-small text-dim mb">Add encoders in order. Encoding runs top-to-bottom; decoding runs bottom-to-top.</p>
+
+        <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+          <select id="chain-add-select" style="flex:1">
+            <option value="">— Select encoder to add —</option>
+          </select>
+          <button class="btn btn-primary" id="chain-add-btn">Add Step</button>
+        </div>
+
+        <div id="chain-steps" class="chain-steps">
+          <div class="chain-empty">No steps added yet. Build your encoding chain above.</div>
+        </div>
+      </div>
+
+      <!-- Chain options per step (dynamic) -->
+      <div class="card" id="chain-step-options" style="display:none">
+        <div class="card-title" id="chain-step-options-title">Step Options</div>
+        <div class="options-panel" id="chain-step-options-body"></div>
+      </div>
+    </div>
+
+    <!-- Right: IO -->
+    <div>
+      <div class="card mb">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
+          <div class="direction-toggle" id="chain-direction">
+            <button class="active" data-dir="encode">Encode</button>
+            <button data-dir="decode">Decode</button>
+          </div>
+        </div>
+
+        <label for="chain-input">Input</label>
+        <textarea id="chain-input" placeholder="Type or paste text here..."></textarea>
+
+        <div class="btn-group mt">
+          <button class="btn btn-primary" id="chain-run">Run Chain</button>
+          <button class="btn" id="chain-clear">Clear All</button>
+          <button class="btn btn-teal" id="chain-export">Export Chain</button>
+          <button class="btn" id="chain-import">Import Chain</button>
+        </div>
+      </div>
+
+      <div class="card output-area">
+        <label for="chain-output">Final Output</label>
+        <textarea id="chain-output" readonly placeholder="Chain result will appear here..."></textarea>
+        <button class="btn btn-small copy-btn" data-copy="chain-output">Copy</button>
+      </div>
+
+      <div id="chain-intermediates" class="intermediate-results"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 3 — Custom Encoder Builder
+     ============================================================ -->
+<section id="tab-custom" class="tab-panel" role="tabpanel">
+
+  <div class="row">
+    <!-- Left: builder form -->
+    <div>
+      <div class="card mb">
+        <div class="card-title">Define Your Encoder</div>
+
+        <label for="builder-name">Name</label>
+        <input type="text" id="builder-name" placeholder="My Custom Encoder" class="mb">
+
+        <label for="builder-desc">Description</label>
+        <input type="text" id="builder-desc" placeholder="What does this encoder do?" class="mb">
+
+        <label for="builder-author">Author</label>
+        <input type="text" id="builder-author" placeholder="Your name or handle" class="mb">
+
+        <div class="checkbox-row mb">
+          <input type="checkbox" id="builder-decodable" checked>
+          <label for="builder-decodable">Is decodable (has a decode function)</label>
+        </div>
+      </div>
+
+      <div class="card mb">
+        <div class="card-title">Encode Function</div>
+        <p class="text-small text-dim mb">Write the body of <code class="mono">function(input, options)</code>. Return the encoded string.</p>
+        <textarea id="builder-encode" class="code-input" spellcheck="false" placeholder="// Example: simple ROT47&#10;return input.split('').map(c => {&#10;  const code = c.charCodeAt(0);&#10;  if (code >= 33 && code <= 126)&#10;    return String.fromCharCode(33 + ((code - 33 + 47) % 94));&#10;  return c;&#10;}).join('');"></textarea>
+      </div>
+
+      <div class="card mb" id="builder-decode-card">
+        <div class="card-title">Decode Function</div>
+        <p class="text-small text-dim mb">Write the body of <code class="mono">function(input, options)</code>. Return the decoded string.</p>
+        <textarea id="builder-decode" class="code-input" spellcheck="false" placeholder="// Reverse of encode&#10;return input.split('').map(c => {&#10;  const code = c.charCodeAt(0);&#10;  if (code >= 33 && code <= 126)&#10;    return String.fromCharCode(33 + ((code - 33 + 47) % 94));&#10;  return c;&#10;}).join('');"></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="builder-register">Register Encoder</button>
+        <button class="btn btn-teal" id="builder-export">Export as JSON</button>
+        <button class="btn" id="builder-import">Import JSON</button>
+      </div>
+    </div>
+
+    <!-- Right: test area -->
+    <div>
+      <div class="card">
+        <div class="card-title">Test Your Encoder</div>
+
+        <div class="builder-test">
+          <div>
+            <label for="builder-test-input">Test Input</label>
+            <textarea id="builder-test-input" placeholder="Enter test text..."></textarea>
+          </div>
+          <div class="output-area">
+            <label for="builder-test-output">Test Output</label>
+            <textarea id="builder-test-output" readonly placeholder="Result..."></textarea>
+            <button class="btn btn-small copy-btn" data-copy="builder-test-output">Copy</button>
+          </div>
+        </div>
+
+        <div class="btn-group mt">
+          <button class="btn btn-primary" id="builder-test-encode">Test Encode</button>
+          <button class="btn" id="builder-test-decode">Test Decode</button>
+        </div>
+
+        <div id="builder-error" class="mt text-small" style="color:var(--red)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 4 — Community Encoders
+     ============================================================ -->
+<section id="tab-community" class="tab-panel" role="tabpanel">
+
+  <div class="card mb">
+    <div class="card-title">Community Encoders</div>
+    <p class="text-small text-dim mb">User-contributed encoders loaded from the repository. Click "Load" to activate one, then use it in the Encode/Decode or Chain tabs.</p>
+    <div id="community-gallery" class="community-grid">
+      <p class="text-dim">Loading community encoder index...</p>
+    </div>
+  </div>
+
+  <div class="contribute-box">
+    <strong>Want to contribute an encoder?</strong><br>
+    1. Use the <strong>Custom Builder</strong> tab to create and test your encoder.<br>
+    2. Click <strong>Export as JSON</strong> to download the definition file.<br>
+    3. Fork the repository and add your <code>.json</code> file to the <code>community-encoders/</code> folder.<br>
+    4. Add an entry to <code>community-encoders/_index.json</code>.<br>
+    5. Open a Pull Request &mdash; once merged, your encoder will appear here automatically.
+  </div>
+</section>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Hidden file input for imports -->
+<input type="file" id="file-import" accept=".json" class="sr-only">
+
+<!-- App entry point -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
